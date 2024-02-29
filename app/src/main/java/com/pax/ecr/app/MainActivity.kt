@@ -23,6 +23,11 @@ import kotlin.random.Random
 
 var responseText by mutableStateOf("The response will be displayed here")
 
+enum class Action {
+    OPEN_ADMIN_MENU,
+    MOVE_TO_FRONT,
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,14 +46,20 @@ class MainActivity : ComponentActivity() {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Button(onClick = { sendIntent(loginRequest()) }) {
+                            Button(onClick = { sendMessageIntent(loginRequest()) }) {
                                 Text(text = "Login")
                             }
-                            Button(onClick = { sendIntent(payment()) }) {
+                            Button(onClick = { sendMessageIntent(payment()) }) {
                                 Text(text = "Payment")
                             }
-                            Button(onClick = { sendIntent(logout()) }) {
+                            Button(onClick = { sendMessageIntent(logout()) }) {
                                 Text(text = "Logout")
+                            }
+                            Button(onClick = { sendAdminIntent(Action.OPEN_ADMIN_MENU) }) {
+                                Text(text = "Admin")
+                            }
+                            Button(onClick = { sendAdminIntent(Action.MOVE_TO_FRONT) }) {
+                                Text(text = "Show payment app")
                             }
                         }
                         Box(
@@ -66,10 +77,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun sendIntent(data: ByteArray) {
+    private fun sendMessageIntent(data: ByteArray) {
         Intent().also { intent ->
             intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_NEXO_MESSAGE")
             intent.putExtra(Intent.EXTRA_TEXT, data)
+            sendBroadcast(intent)
+        }
+    }
+
+    private fun sendAdminIntent(action: Action) {
+        Intent().also { intent ->
+            intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_ADMIN")
+            intent.putExtra(Intent.EXTRA_TEXT, action.name)
             sendBroadcast(intent)
         }
     }

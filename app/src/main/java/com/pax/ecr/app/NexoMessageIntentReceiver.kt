@@ -11,9 +11,8 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         intent: Intent,
     ) {
         val nexoMessage = intent.extras?.getByteArray(Intent.EXTRA_TEXT)?.toString(Charset.defaultCharset())
-        requireNotNull(nexoMessage)
         moveToForeground(context)
-        responseText = nexoMessage
+        responseText = nexoMessage ?: ""
     }
 
     private fun moveToForeground(context: Context) {
