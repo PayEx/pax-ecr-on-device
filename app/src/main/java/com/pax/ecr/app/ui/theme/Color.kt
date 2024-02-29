@@ -1,4 +1,4 @@
-package com.example.pax.ecr.app.ui.theme
+package com.pax.ecr.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
