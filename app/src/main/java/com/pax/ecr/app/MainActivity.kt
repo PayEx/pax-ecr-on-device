@@ -18,14 +18,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.pax.ecr.app.ui.theme.PaxecrondeviceTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.nio.charset.Charset
 import kotlin.random.Random
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 var responseText by mutableStateOf("The response will be displayed here")
 
 enum class Action {
     OPEN_ADMIN_MENU,
     MOVE_TO_FRONT,
+    MOVE_TO_BACK,
 }
 
 class MainActivity : ComponentActivity() {
@@ -61,6 +68,9 @@ class MainActivity : ComponentActivity() {
                             Button(onClick = { sendAdminIntent(Action.MOVE_TO_FRONT) }) {
                                 Text(text = "Show payment app")
                             }
+                            Button(onClick = ::showThenHide) {
+                                Text(text = "Temporary show payment app")
+                            }
                         }
                         Box(
                             modifier =
@@ -76,6 +86,13 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun showThenHide() =
+        CoroutineScope(Dispatchers.IO).launch {
+            sendAdminIntent(Action.MOVE_TO_FRONT)
+            delay(5.toDuration(DurationUnit.SECONDS))
+            sendAdminIntent(Action.MOVE_TO_BACK)
+        }
 
     private fun sendMessageIntent(data: ByteArray) {
         Intent().also { intent ->
