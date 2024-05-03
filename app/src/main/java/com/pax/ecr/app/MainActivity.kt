@@ -1,23 +1,24 @@
 package com.pax.ecr.app
 
+import AdminMenu
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.pax.ecr.app.ui.theme.PaxecrondeviceTheme
+import com.pax.ecr.app.ui.screen.Footer
+import com.pax.ecr.app.ui.screen.MainScreen
+import com.pax.ecr.app.ui.screen.ModalBottomSheet
+import com.pax.ecr.app.ui.theme.PaxTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,57 +30,50 @@ import kotlin.time.toDuration
 
 var responseText by mutableStateOf("The response will be displayed here")
 
-enum class Action {
-    OPEN_ADMIN_MENU,
-    MOVE_TO_FRONT,
-    MOVE_TO_BACK,
-}
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PaxecrondeviceTheme {
+            PaxTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    Column {
-                        Column(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .weight(2f),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Button(onClick = { sendMessageIntent(loginRequest()) }) {
-                                Text(text = "Login")
-                            }
-                            Button(onClick = { sendMessageIntent(payment()) }) {
-                                Text(text = "Payment")
-                            }
-                            Button(onClick = { sendMessageIntent(logout()) }) {
-                                Text(text = "Logout")
-                            }
-                            Button(onClick = { sendAdminIntent(Action.OPEN_ADMIN_MENU) }) {
-                                Text(text = "Admin")
-                            }
-                            Button(onClick = { sendAdminIntent(Action.MOVE_TO_FRONT) }) {
-                                Text(text = "Show payment app")
-                            }
-                            Button(onClick = ::showThenHide) {
-                                Text(text = "Temporary show payment app")
+                    var isOpen by remember {
+                        mutableStateOf(false)
+                    }
+                    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+                        MainScreen { action ->
+                            when (action) {
+                                Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
+                                Action.LOGIN -> sendMessageIntent(loginRequest())
+                                Action.LOGOUT -> sendMessageIntent(logout())
+                                Action.PURCHASE -> sendMessageIntent(payment())
+                                Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
+                                Action.REFUND -> sendMessageIntent(refund())
+                                Action.REVERSAL -> sendMessageIntent(reversal())
                             }
                         }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .weight(1f),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(text = responseText)
+                        Footer(isOpen) { isOpen = !isOpen }
+                    }
+                    if (isOpen) {
+                        ModalBottomSheet(onClose = { isOpen = !isOpen }) {
+                            AdminMenu { action ->
+                                when (action) {
+                                    AdminAction.OPEN_ADMIN_MENU -> {
+                                        sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
+                                    }
+                                    AdminAction.MOVE_TO_FRONT -> {
+                                        sendAdminIntent(AdminAction.MOVE_TO_FRONT)
+                                    }
+                                    AdminAction.MOVE_TO_BACK -> {
+                                        sendAdminIntent(AdminAction.MOVE_TO_BACK)
+                                    }
+                                    AdminAction.TEMPORARY_SHOW -> {
+                                        showThenHide()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -89,9 +83,9 @@ class MainActivity : ComponentActivity() {
 
     private fun showThenHide() =
         CoroutineScope(Dispatchers.IO).launch {
-            sendAdminIntent(Action.MOVE_TO_FRONT)
+            sendAdminIntent(AdminAction.MOVE_TO_FRONT)
             delay(5.toDuration(DurationUnit.SECONDS))
-            sendAdminIntent(Action.MOVE_TO_BACK)
+            sendAdminIntent(AdminAction.MOVE_TO_BACK)
         }
 
     private fun sendMessageIntent(data: ByteArray) {
@@ -102,10 +96,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun sendAdminIntent(action: Action) {
+    private fun sendAdminIntent(adminAction: AdminAction) {
         Intent().also { intent ->
             intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_ADMIN")
-            intent.putExtra(Intent.EXTRA_TEXT, action.name)
+            intent.putExtra(Intent.EXTRA_TEXT, adminAction.name)
             sendBroadcast(intent)
         }
     }
@@ -147,6 +141,49 @@ class MainActivity : ComponentActivity() {
                     <AmountsReq CashBackAmount="0" Currency="SEK" RequestedAmount="100"/>
                 </PaymentTransaction>
             </PaymentRequest>
+        </SaleToPOIRequest>
+        """.trimIndent().toByteArray(Charset.defaultCharset())
+
+    private fun paymentWithCashback() =
+        """
+        <SaleToPOIRequest>
+            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="klev" ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <PaymentRequest>
+                <SaleData TokenRequestedType="Customer">
+                    <SaleTransactionID TimeStamp="2024-02-29T12:10:55.389697+01:00" TransactionID="2536476465"/>
+                </SaleData>
+                <PaymentTransaction>
+                    <AmountsReq CashBackAmount="50" Currency="SEK" RequestedAmount="100"/>
+                </PaymentTransaction>
+            </PaymentRequest>
+        </SaleToPOIRequest>
+        """.trimIndent().toByteArray(Charset.defaultCharset())
+
+    private fun refund() =
+        """
+        <SaleToPOIRequest>
+            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="1995" ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <PaymentRequest>
+                <SaleData TokenRequestedType="Customer">
+                    <SaleTransactionID TimeStamp="2024-05-03T13:02:39.187273+02:00" TransactionID="2487784444"/>
+                </SaleData>
+                <PaymentTransaction>
+                    <AmountsReq Currency="SEK" RequestedAmount="100"/>
+                </PaymentTransaction>
+                <PaymentData PaymentType="Refund"/>
+            </PaymentRequest>
+        </SaleToPOIRequest>
+        """.trimIndent().toByteArray(Charset.defaultCharset())
+
+    private fun reversal() =
+        """
+        <SaleToPOIRequest>
+            <MessageHeader MessageCategory="Reversal" MessageClass="Service" MessageType="Request" POIID="1995" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <ReversalRequest ReversalReason="CustCancel">
+                <OriginalPOITransaction POIID="1995" SaleID="ECR1">
+                    <POITransactionID TimeStamp="null" TransactionID="null"/>
+                </OriginalPOITransaction>
+            </ReversalRequest>
         </SaleToPOIRequest>
         """.trimIndent().toByteArray(Charset.defaultCharset())
 }
