@@ -1,23 +1,18 @@
 package com.pax.ecr.app
 
-import AdminMenu
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.pax.ecr.app.ui.screen.Footer
 import com.pax.ecr.app.ui.screen.MainScreen
-import com.pax.ecr.app.ui.screen.ModalBottomSheet
+import com.pax.ecr.app.ui.screen.ResponseScreen
 import com.pax.ecr.app.ui.theme.PaxTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +23,7 @@ import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-var responseText by mutableStateOf("The response will be displayed here")
+var responseText by mutableStateOf("")
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,47 +34,52 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    var isOpen by remember {
-                        mutableStateOf(false)
-                    }
-                    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-                        MainScreen { action ->
-                            when (action) {
-                                Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
-                                Action.LOGIN -> sendMessageIntent(loginRequest())
-                                Action.LOGOUT -> sendMessageIntent(logout())
-                                Action.PURCHASE -> sendMessageIntent(payment())
-                                Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
-                                Action.REFUND -> sendMessageIntent(refund())
-                                Action.REVERSAL -> sendMessageIntent(reversal())
-                            }
+                    if (responseText.isNotBlank()) {
+                        ResponseScreen(response = responseText) {
+                            responseText = ""
                         }
-                        Footer(isOpen) { isOpen = !isOpen }
-                    }
-                    if (isOpen) {
-                        ModalBottomSheet(onClose = { isOpen = !isOpen }) {
-                            AdminMenu { action ->
-                                when (action) {
-                                    AdminAction.OPEN_ADMIN_MENU -> {
-                                        sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
-                                    }
-                                    AdminAction.MOVE_TO_FRONT -> {
-                                        sendAdminIntent(AdminAction.MOVE_TO_FRONT)
-                                    }
-                                    AdminAction.MOVE_TO_BACK -> {
-                                        sendAdminIntent(AdminAction.MOVE_TO_BACK)
-                                    }
-                                    AdminAction.TEMPORARY_SHOW -> {
-                                        showThenHide()
-                                    }
-                                }
-                            }
-                        }
+                    } else {
+                        MainScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            handleAdminAction = ::handleAdminAction,
+                            handleAction = ::handleAction,
+                        )
                     }
                 }
             }
         }
     }
+
+    private fun handleAdminAction(action: AdminAction) {
+        when (action) {
+            AdminAction.OPEN_ADMIN_MENU -> {
+                sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
+            }
+
+            AdminAction.MOVE_TO_FRONT -> {
+                sendAdminIntent(AdminAction.MOVE_TO_FRONT)
+            }
+
+            AdminAction.MOVE_TO_BACK -> {
+                sendAdminIntent(AdminAction.MOVE_TO_BACK)
+            }
+
+            AdminAction.TEMPORARY_SHOW -> {
+                showThenHide()
+            }
+        }
+    }
+
+    private fun handleAction(action: Action) =
+        when (action) {
+            Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
+            Action.LOGIN -> sendMessageIntent(loginRequest())
+            Action.LOGOUT -> sendMessageIntent(logout())
+            Action.PURCHASE -> sendMessageIntent(payment())
+            Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
+            Action.REFUND -> sendMessageIntent(refund())
+            Action.REVERSAL -> sendMessageIntent(reversal())
+        }
 
     private fun showThenHide() =
         CoroutineScope(Dispatchers.IO).launch {

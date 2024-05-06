@@ -28,11 +28,11 @@ fun ActionButton(
     buttonIcon: ImageVector? = null,
     fullSize: Boolean = false,
     onClick: () -> Unit,
-) = Box(modifier = modifier.width(if (fullSize) 312.dp else 148.dp)) {
+) = Box(modifier = modifier.width(if (fullSize) 312.dp else 130.dp)) {
     Column(
         modifier =
             modifier
-                .height(148.dp)
+                .height(130.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .clickable(onClick = onClick)
                 .fillMaxWidth()
