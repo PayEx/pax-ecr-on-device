@@ -16,6 +16,7 @@ import com.pax.ecr.app.AdminAction
 @Composable
 fun MainScreen(
     handleAdminAction: (AdminAction) -> Unit,
+    onModalClose: () -> Unit,
     modifier: Modifier = Modifier,
     handleAction: (Action) -> Unit,
 ) {
@@ -27,7 +28,10 @@ fun MainScreen(
         Footer(isOpen) { isOpen = !isOpen }
     }
     if (isOpen) {
-        ModalBottomSheet(onClose = { isOpen = !isOpen }) {
+        ModalBottomSheet(onClose = {
+            onModalClose()
+            isOpen = !isOpen
+        }) {
             AdminMenu { action ->
                 isOpen = false
                 handleAdminAction(action)
