@@ -14,11 +14,15 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pax.ecr.app.R
 
 @Composable
@@ -31,7 +35,7 @@ fun Footer(
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(44.dp),
+                .height(56.dp),
     ) {
         SlideVertically(
             visible = true,
@@ -67,7 +71,15 @@ fun Footer(
                     Image(
                         painterResource(R.drawable.swedbankpay_logo_no_text),
                         "Swedbank Pay logo without text",
-                        modifier = Modifier.height(26.dp),
+                        modifier = Modifier.height(30.dp),
+                    )
+                    Text(
+                        text = " Pay",
+                        style =
+                            TextStyle(
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
                     )
                 }
             }
