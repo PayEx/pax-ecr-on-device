@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
+                    onClick = ::hideNavBar,
                 ) {
                     if (responseText.isNotBlank()) {
                         ResponseScreen(response = responseText) {
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleAdminAction(action: AdminAction) {
+        hideNavBar()
         when (action) {
             AdminAction.OPEN_ADMIN_MENU -> {
                 sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
@@ -84,7 +86,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun handleAction(action: Action) =
+    private fun handleAction(action: Action) {
+        hideNavBar()
         when (action) {
             Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
             Action.LOGIN -> sendMessageIntent(loginRequest())
@@ -94,6 +97,7 @@ class MainActivity : ComponentActivity() {
             Action.REFUND -> sendMessageIntent(refund())
             Action.REVERSAL -> sendMessageIntent(reversal())
         }
+    }
 
     private fun showThenHide() =
         CoroutineScope(Dispatchers.IO).launch {
@@ -103,6 +107,7 @@ class MainActivity : ComponentActivity() {
         }
 
     private fun sendMessageIntent(data: ByteArray) {
+        hideNavBar()
         Intent().also { intent ->
             intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_NEXO_MESSAGE")
             intent.putExtra(Intent.EXTRA_TEXT, data)
@@ -111,6 +116,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendAdminIntent(adminAction: AdminAction) {
+        hideNavBar()
         Intent().also { intent ->
             intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_ADMIN")
             intent.putExtra(Intent.EXTRA_TEXT, adminAction.name)
