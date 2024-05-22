@@ -50,6 +50,7 @@ fun AdminMenu(
             AdminMenuButton("Admin Menu") { actionHandler(AdminAction.OPEN_ADMIN_MENU) }
             AdminMenuButton("Show payment app") { actionHandler(AdminAction.MOVE_TO_FRONT) }
             AdminMenuButton("Temporarily show payment app") { actionHandler(AdminAction.TEMPORARY_SHOW) }
+            AdminMenuButton("Configuration") { actionHandler(AdminAction.OPEN_CONFIG_MENU) }
         }
     }
 }

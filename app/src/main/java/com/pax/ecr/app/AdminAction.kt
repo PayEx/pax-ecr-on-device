@@ -5,4 +5,5 @@ enum class AdminAction {
     MOVE_TO_FRONT,
     MOVE_TO_BACK,
     TEMPORARY_SHOW,
+    OPEN_CONFIG_MENU,
 }
