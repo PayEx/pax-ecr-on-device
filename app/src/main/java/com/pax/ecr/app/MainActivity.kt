@@ -1,5 +1,6 @@
 package com.pax.ecr.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -20,19 +21,28 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.nio.charset.Charset
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 var responseText by mutableStateOf("")
 var config by mutableStateOf(Config.DEFAULT)
-var configMenuVisible by mutableStateOf(!config.isValid())
+var configMenuVisible by mutableStateOf(false)
+var lastTransactionId by mutableStateOf("")
+var lastTransactionDatetime by mutableStateOf("")
+var lastResponseTransactionId by mutableStateOf("")
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideNavBar()
+        config = restoreConfig()
+        configMenuVisible = !config.isValid()
         setContent {
             PaxTheme {
                 Surface(
@@ -45,7 +55,10 @@ class MainActivity : ComponentActivity() {
                             responseText = ""
                         }
                     } else if (configMenuVisible) {
-                        ConfigScreen(config, { configMenuVisible = false }) { config = it }
+                        ConfigScreen(config, { configMenuVisible = false }) {
+                            config = it
+                            saveConfig(it)
+                        }
                     } else {
                         MainScreen(
                             modifier = Modifier.fillMaxSize(),
@@ -56,6 +69,24 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun restoreConfig() =
+        getSharedPreferences("config", Context.MODE_PRIVATE).let {
+            it.getString("config", null)?.let { configJson -> Json.decodeFromString<Config>(configJson) } ?: Config.DEFAULT
+        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveConfig(config)
+    }
+
+    private fun saveConfig(config: Config) {
+        val sharedPreferences = getSharedPreferences("config", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("config", Json.encodeToString(config))
+            apply()
         }
     }
 
@@ -140,12 +171,24 @@ class MainActivity : ComponentActivity() {
 
     private fun randomServiceId() = Random.nextInt(0, Int.MAX_VALUE)
 
+    private fun randomTransactionId() =
+        Random.nextInt(0, Int.MAX_VALUE).also {
+            lastTransactionId = it.toString()
+        }
+
+    private fun now() = ZonedDateTime.now(ZoneId.of("Europe/Oslo")).toString()
+
+    private fun transactionTimestamp() =
+        now().also {
+            lastTransactionDatetime = it
+        }
+
     private fun loginRequest() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Login" MessageClass="Service" MessageType="Request" POIID=${config.poiId} ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <MessageHeader MessageCategory="Login" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <LoginRequest OperatorID="Cashier1" OperatorLanguage="en" ShiftNumber="2">
-                <DateTime>2024-02-29T09:46:44.024097+01:00</DateTime>
+                <DateTime>${now()}</DateTime>
                 <SaleSoftware ApplicationName="TestScripts" CertificationCode="ECTS2PS001" ProviderIdentification="swedbankpay" SoftwareVersion="1.0"/>
                 <SaleTerminalData TerminalEnvironment="Attended">
                     <SaleCapabilities>PrinterReceipt CashierStatus CashierError CashierDisplay CashierInput</SaleCapabilities>
@@ -158,7 +201,7 @@ class MainActivity : ComponentActivity() {
     private fun logout() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Logout" MessageClass="Service" MessageType="Request" POIID=${config.poiId} ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <MessageHeader MessageCategory="Logout" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <LogoutRequest MaintenanceAllowed="true"/>
         </SaleToPOIRequest>
         """.trimIndent().toByteArray(Charset.defaultCharset())
@@ -166,13 +209,13 @@ class MainActivity : ComponentActivity() {
     private fun payment() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID=${config.poiId} ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="2024-02-29T12:10:55.389697+01:00" TransactionID="2536476465"/>
+                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
-                    <AmountsReq CashBackAmount="0" Currency=${config.currencyCode} RequestedAmount="100"/>
+                    <AmountsReq CashBackAmount="0" Currency="${config.currencyCode}"  RequestedAmount="100"/>
                 </PaymentTransaction>
             </PaymentRequest>
         </SaleToPOIRequest>
@@ -181,13 +224,13 @@ class MainActivity : ComponentActivity() {
     private fun paymentWithCashback() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID=${config.poiId} ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="2024-02-29T12:10:55.389697+01:00" TransactionID="2536476465"/>
+                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
-                    <AmountsReq CashBackAmount="50" Currency=${config.currencyCode} RequestedAmount="100"/>
+                    <AmountsReq CashBackAmount="50" Currency="${config.currencyCode}"  RequestedAmount="100"/>
                 </PaymentTransaction>
             </PaymentRequest>
         </SaleToPOIRequest>
@@ -196,13 +239,13 @@ class MainActivity : ComponentActivity() {
     private fun refund() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID=${config.poiId} ProtocolVersion="3.1" SaleID="ECR1" ServiceID="${randomServiceId()}"/>
+            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="2024-05-03T13:02:39.187273+02:00" TransactionID="2487784444"/>
+                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
-                    <AmountsReq Currency=${config.currencyCode} RequestedAmount="100"/>
+                    <AmountsReq Currency="${config.currencyCode}"  RequestedAmount="100"/>
                 </PaymentTransaction>
                 <PaymentData PaymentType="Refund"/>
             </PaymentRequest>
@@ -212,10 +255,10 @@ class MainActivity : ComponentActivity() {
     private fun reversal() =
         """
         <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Reversal" MessageClass="Service" MessageType="Request" POIID=${config.poiId} SaleID="ECR1" ServiceID="${randomServiceId()}"/>
-            <ReversalRequest ReversalReason="CustCancel">
-                <OriginalPOITransaction POIID=${config.poiId} SaleID="ECR1">
-                    <POITransactionID TimeStamp="null" TransactionID="null"/>
+            <MessageHeader MessageCategory="Reversal" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
+            <ReversalRequest ReversalReason="MerchantCancel">
+                <OriginalPOITransaction POIID="${config.poiId}" SaleID="${config.saleId}">
+                    <POITransactionID TimeStamp="$lastTransactionDatetime" TransactionID="$lastResponseTransactionId" />
                 </OriginalPOITransaction>
             </ReversalRequest>
         </SaleToPOIRequest>

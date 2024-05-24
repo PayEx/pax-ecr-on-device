@@ -32,18 +32,21 @@ fun ConfigScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             TextField(value = config.poiId.orEmpty(), singleLine = true, onValueChange = {
-                if (it.isNotBlank()) {
-                    onConfigChange(
-                        config.copy(poiId = it),
-                    )
-                }
+                onConfigChange(
+                    config.copy(poiId = it),
+                )
             }, label = {
                 Text(text = "POI ID")
             })
             TextField(value = config.currencyCode.orEmpty(), singleLine = true, onValueChange = {
-                if (it.isNotBlank()) onConfigChange(config.copy(currencyCode = it))
+                onConfigChange(config.copy(currencyCode = it.uppercase()))
             }, label = {
                 Text(text = "Currency code")
+            })
+            TextField(value = config.saleId.orEmpty(), singleLine = true, onValueChange = {
+                onConfigChange(config.copy(saleId = it))
+            }, label = {
+                Text(text = "Sale ID")
             })
         }
         Box(modifier = Modifier.weight(.3f)) {

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -68,6 +69,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("com.github.skydoves:cloudy:0.1.2")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
     testImplementation("junit:junit:4.13.2")
