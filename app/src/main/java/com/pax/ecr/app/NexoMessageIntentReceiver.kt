@@ -3,6 +3,7 @@ package com.pax.ecr.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import org.xml.sax.SAXParseException
 import java.io.StringReader
@@ -17,6 +18,7 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         val nexoMessage = intent.extras?.getByteArray(Intent.EXTRA_TEXT)?.toString(Charset.defaultCharset())
         moveToForeground(context)
         lastResponseTransactionId = nexoMessage.extractPOITransactionID()
+        lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
         responseText = nexoMessage.orEmpty()
     }
 
@@ -27,13 +29,22 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
     }
 
     private fun String?.extractPOITransactionID() =
+        extractCommon {
+            val poiTransactionIDNode = it.getElementsByTagName("POITransactionID")?.item(0)
+            poiTransactionIDNode?.attributes?.getNamedItem("TransactionID")?.nodeValue.orEmpty()
+        }
+
+    private fun String?.extractPOITimeStamp() =
+        extractCommon {
+            val poiTimeStampNode = it.getElementsByTagName("POITransactionID")?.item(0)
+            poiTimeStampNode?.attributes?.getNamedItem("TimeStamp")?.nodeValue.orEmpty()
+        }
+
+    private fun String?.extractCommon(extraction: (Document) -> String) =
         try {
             val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
             val inputSource = InputSource(StringReader(this))
-            val document = documentBuilder.parse(inputSource)
-
-            val poiTransactionIDNode = document.getElementsByTagName("POITransactionID")?.item(0)
-            poiTransactionIDNode?.attributes?.getNamedItem("TransactionID")?.nodeValue.orEmpty()
+            extraction(documentBuilder.parse(inputSource))
         } catch (e: SAXParseException) {
             ""
         } catch (e: NullPointerException) {

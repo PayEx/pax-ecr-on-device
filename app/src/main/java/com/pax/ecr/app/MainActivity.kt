@@ -26,6 +26,7 @@ import kotlinx.serialization.json.Json
 import java.nio.charset.Charset
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -176,12 +177,7 @@ class MainActivity : ComponentActivity() {
             lastTransactionId = it.toString()
         }
 
-    private fun now() = ZonedDateTime.now(ZoneId.of("Europe/Oslo")).toString()
-
-    private fun transactionTimestamp() =
-        now().also {
-            lastTransactionDatetime = it
-        }
+    private fun now() = ZonedDateTime.now(ZoneId.of("Europe/Oslo")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
     private fun loginRequest() =
         """
@@ -191,7 +187,7 @@ class MainActivity : ComponentActivity() {
                 <DateTime>${now()}</DateTime>
                 <SaleSoftware ApplicationName="TestScripts" CertificationCode="ECTS2PS001" ProviderIdentification="swedbankpay" SoftwareVersion="1.0"/>
                 <SaleTerminalData TerminalEnvironment="Attended">
-                    <SaleCapabilities>PrinterReceipt CashierStatus CashierError CashierDisplay CashierInput</SaleCapabilities>
+                    <SaleCapabilities>PrinterReceipt</SaleCapabilities>
                     <SaleProfile/>
                 </SaleTerminalData>
             </LoginRequest>
@@ -212,7 +208,7 @@ class MainActivity : ComponentActivity() {
             <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
+                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
                     <AmountsReq CashBackAmount="0" Currency="${config.currencyCode}"  RequestedAmount="100"/>
@@ -227,7 +223,7 @@ class MainActivity : ComponentActivity() {
             <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
+                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
                     <AmountsReq CashBackAmount="50" Currency="${config.currencyCode}"  RequestedAmount="100"/>
@@ -242,7 +238,7 @@ class MainActivity : ComponentActivity() {
             <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
             <PaymentRequest>
                 <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${transactionTimestamp()}" TransactionID="${randomTransactionId()}"/>
+                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
                     <AmountsReq Currency="${config.currencyCode}"  RequestedAmount="100"/>
