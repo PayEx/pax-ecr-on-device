@@ -3,6 +3,7 @@ package com.pax.ecr.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import org.xml.sax.SAXParseException
@@ -21,6 +22,13 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
         responseText = nexoMessage.orEmpty()
         purchaseMenuVisible = false
+        if (nexoMessage.isLoginResponseFailure()) {
+            Toast.makeText(
+                context,
+                "Login failed",
+                Toast.LENGTH_LONG,
+            ).show()
+        }
     }
 
     private fun moveToForeground(context: Context) {
@@ -40,6 +48,14 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
             val poiTimeStampNode = it.getElementsByTagName("POITransactionID")?.item(0)
             poiTimeStampNode?.attributes?.getNamedItem("TimeStamp")?.nodeValue.orEmpty()
         }
+
+    private fun String?.isLoginResponseFailure() =
+        extractCommon {
+            it.getElementsByTagName("LoginResponse")?.item(0)
+                ?.childNodes?.item(0)
+                ?.attributes?.getNamedItem("Result")
+                ?.nodeValue ?: ""
+        }.let { it != "Success" || it.isEmpty() }
 
     private fun String?.extractCommon(extraction: (Document) -> String) =
         try {

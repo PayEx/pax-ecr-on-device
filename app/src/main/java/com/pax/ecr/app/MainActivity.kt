@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                     onClick = ::hideNavBar,
                 ) {
-                    if (responseText.isNotBlank()) {
+                    if (config.responseScreenEnabled && responseText.isNotBlank()) {
                         ResponseScreen(response = responseText) {
                             responseText = ""
                         }

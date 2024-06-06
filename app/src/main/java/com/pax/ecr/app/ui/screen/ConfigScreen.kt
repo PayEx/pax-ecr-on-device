@@ -3,9 +3,12 @@ package com.pax.ecr.app.ui.screen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ fun ConfigScreen(
         Column(
             modifier = Modifier.weight(.7f),
             verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TextField(value = config.poiId.orEmpty(), singleLine = true, onValueChange = {
                 onConfigChange(
@@ -48,6 +52,17 @@ fun ConfigScreen(
             }, label = {
                 Text(text = "Sale ID")
             })
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "Response-screen")
+                Switch(
+                    checked = config.responseScreenEnabled,
+                    onCheckedChange = { onConfigChange(config.copy(responseScreenEnabled = it)) },
+                )
+            }
         }
         Box(modifier = Modifier.weight(.3f)) {
             Button(onClick = close, enabled = config.isValid()) {
