@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.pax.ecr.app.ui.screen.ConfigScreen
 import com.pax.ecr.app.ui.screen.MainScreen
+import com.pax.ecr.app.ui.screen.PurchaseScreen
 import com.pax.ecr.app.ui.screen.ResponseScreen
 import com.pax.ecr.app.ui.theme.PaxTheme
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +24,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.math.BigDecimal
 import java.nio.charset.Charset
+import java.text.DecimalFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -37,6 +40,7 @@ var configMenuVisible by mutableStateOf(false)
 var lastTransactionId by mutableStateOf("")
 var lastTransactionDatetime by mutableStateOf("")
 var lastResponseTransactionId by mutableStateOf("")
+var purchaseMenuVisible by mutableStateOf(false)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +63,10 @@ class MainActivity : ComponentActivity() {
                         ConfigScreen(config, { configMenuVisible = false }) {
                             config = it
                             saveConfig(it)
+                        }
+                    } else if (purchaseMenuVisible) {
+                        PurchaseScreen {
+                            sendMessageIntent(payment(it))
                         }
                     } else {
                         MainScreen(
@@ -138,7 +146,9 @@ class MainActivity : ComponentActivity() {
             Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
             Action.LOGIN -> sendMessageIntent(loginRequest())
             Action.LOGOUT -> sendMessageIntent(logout())
-            Action.PURCHASE -> sendMessageIntent(payment())
+            Action.PURCHASE -> {
+                purchaseMenuVisible = true
+            }
             Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
             Action.REFUND -> sendMessageIntent(refund())
             Action.REVERSAL -> sendMessageIntent(reversal())
@@ -202,7 +212,7 @@ class MainActivity : ComponentActivity() {
         </SaleToPOIRequest>
         """.trimIndent().toByteArray(Charset.defaultCharset())
 
-    private fun payment() =
+    private fun payment(amount: BigDecimal) =
         """
         <SaleToPOIRequest>
             <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
@@ -211,7 +221,9 @@ class MainActivity : ComponentActivity() {
                     <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
                 </SaleData>
                 <PaymentTransaction>
-                    <AmountsReq CashBackAmount="0" Currency="${config.currencyCode}"  RequestedAmount="100"/>
+                    <AmountsReq CashBackAmount="0" Currency="${config.currencyCode}"  RequestedAmount="${DecimalFormat(
+            "#0.##",
+        ).format(amount)}"/>
                 </PaymentTransaction>
             </PaymentRequest>
         </SaleToPOIRequest>

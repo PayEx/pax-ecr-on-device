@@ -20,6 +20,7 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         lastResponseTransactionId = nexoMessage.extractPOITransactionID()
         lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
         responseText = nexoMessage.orEmpty()
+        purchaseMenuVisible = false
     }
 
     private fun moveToForeground(context: Context) {
