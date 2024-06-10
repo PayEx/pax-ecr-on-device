@@ -1,21 +1,22 @@
 # pax-ecr-on-device
-A demo _ECR on Device_ Android-application that runs on the PAX-family of payment terminals.
 
-## Getting started
+A demo _ECR on Device_ Android application designed to run on the PAX family of payment terminals.
 
-Running this application requires a payment terminal, as well as a version of the payment application
-that supports receiving NEXO-retailer messages via Intent, and the _ECR on Device_-feature being enabled via the dev-menu on the payment application. 
-Currently, such a version can be found, for 
-PayEx developers, in the pax-payment-app repository on the branch 
-[PAX-3262-create-initial-application-for-ecr-on-device-testing](https://github.com/PayEx/pax-payment-app/tree/PAX-3262-create-initial-application-for-ecr-on-device-testing).
-Partners can download a packaged version via the TMS.
+## Getting Started
+
+To run this application, you will need:
+- A compatible payment terminal
+- A version of the payment application that supports receiving NEXO-retailer messages via Intent
+- The _ECR on Device_ feature enabled via the dev-menu in the payment application
+
+PayEx developers can find the necessary version of the payment application in the `pax-payment-app` repository on the branch [PAX-3262-create-initial-application-for-ecr-on-device-testing](https://github.com/PayEx/pax-payment-app/tree/PAX-3262-create-initial-application-for-ecr-on-device-testing). Partners can download a packaged version via the TMS.
 
 ## Usage
 
-When running the _ECR on Device_ application, the initial boot will prompt for a config. Here, 
-you must add a POI-ID and the currency associated with that POI. If you're debugging, you
-might want to turn on the _Response-screen_-flag in order to see the responses from the terminal.
+Upon launching the _ECR on Device_ application, you will be prompted to configure the app. Enter the POI-ID and the currency associated with that POI. If you are debugging, consider enabling the _Response-screen_ flag to view responses from the terminal.
 
-To verify that everything works, you can try to send a login-request, or entering the payment
-application from the footer menu. If either application stalls, or seems unresponsive, try to restart
-the terminal.
+To verify that everything is functioning correctly, you can:
+- Send a login request
+- Access the payment application from the footer menu
+
+If the application stalls or becomes unresponsive, try restarting the terminal.
