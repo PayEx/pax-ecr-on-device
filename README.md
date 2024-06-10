@@ -12,14 +12,10 @@ Partners can download a packaged version via the TMS.
 
 ## Usage
 
-When running the _ECR on Device_ application, the initial boot will look something like this:
-![Screenshot 2024-05-21 at 13.28.25.png](https://i.imgur.com/3M2M3uT.png)
+When running the _ECR on Device_ application, the initial boot will prompt for a config. Here, 
+you must add a POI-ID and the currency associated with that POI. If you're debugging, you
+might want to turn on the _Response-screen_-flag in order to see the responses from the terminal.
 
-To verify that everything works as expected, try to open the menu, and select _Temporarily show payment app_.
-![Screenshot 2024-05-21 at 13.28.25.png](https://i.imgur.com/2WeHLDy.png)
-
-This should display the payment application for 5 seconds, before then displaying the _ECR on Device_ again.
-Then, you can try to login, which should provide a response similar to
-![Screenshot 2024-05-21 at 13.33.53.png](https://i.imgur.com/lXvolnr.png)
-
-If either application stall, and nothing seem to happen, simply restart the terminal.
+To verify that everything works, you can try to send a login-request, or entering the payment
+application from the footer menu. If either application stalls, or seems unresponsive, try to restart
+the terminal.
