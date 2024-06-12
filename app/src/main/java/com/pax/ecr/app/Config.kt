@@ -13,5 +13,6 @@ data class Config(
         val DEFAULT = Config(null, null, "ECR1", false)
     }
 
-    fun isValid() = poiId != null && currencyCode != null && saleId != null
+    fun isValid() =
+        poiId != null && currencyCode != null && saleId != null && currencyCode.length == 3 && currencyCode.all { it.isLetter() }
 }
