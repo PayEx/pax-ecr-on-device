@@ -55,7 +55,7 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
                 ?.childNodes?.item(0)
                 ?.attributes?.getNamedItem("Result")
                 ?.nodeValue ?: ""
-        }.let { it != "Success" || it.isEmpty() }
+        }.let { it != "Success" && it.isNotBlank() }
 
     private fun String?.extractCommon(extraction: (Document) -> String) =
         try {
