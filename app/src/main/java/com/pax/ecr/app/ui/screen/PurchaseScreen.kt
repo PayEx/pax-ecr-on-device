@@ -31,7 +31,7 @@ import java.math.BigDecimal
 @Composable
 fun PurchaseScreen(
     modifier: Modifier = Modifier,
-    onPaymentSelected: (BigDecimal) -> Unit,
+    onPaymentSelect: (BigDecimal) -> Unit,
 ) {
     var pizzaSelected by remember { mutableStateOf(false) }
     var burgerSelected by remember { mutableStateOf(false) }
@@ -93,7 +93,7 @@ fun PurchaseScreen(
 
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(
-                onClick = { onPaymentSelected(totalPrice) },
+                onClick = { onPaymentSelect(totalPrice) },
                 modifier = Modifier.width(150.dp).height(50.dp),
                 enabled = totalPrice > BigDecimal.ZERO,
             ) {
