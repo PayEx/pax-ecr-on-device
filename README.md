@@ -24,12 +24,12 @@ If the application stalls or becomes unresponsive, try restarting the terminal.
 ## Contributing
 We welcome contributions to enhance the ECR on Device application. To contribute, please follow these steps:
 
-1. Fork the Repository: Create a fork of the repository on GitHub.
-2. Clone the Repository: Clone your fork to your local machine using git clone.
-3. Create a Branch: Create a new branch for your feature or bug fix using git checkout -b feature-name.
-4. Make Changes: Implement your changes and ensure they are well-tested.
-5. Commit Changes: Commit your changes with clear and descriptive commit messages.
-6. Push Changes: Push your changes to your forked repository using git push origin feature-name.
-7. Create a Pull Request: Open a pull request on the original repository, detailing your changes and any issues they address.
+1. Fork the Repository
+2. Clone the Repository
+3. Create a Branch
+4. Implement your changes and ensure they are well-tested.
+5. Commit your changes with clear and descriptive commit messages.
+6. Push your changes to your forked repository
+7. Open a pull request on the original repository, detailing your changes and any issues they address.
 
 Please ensure your contributions adhere to the project's coding standards and include appropriate documentation. For significant changes, consider discussing them with the repository maintainers before starting work.
