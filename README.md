@@ -9,7 +9,8 @@ To run this application, you will need:
 - A version of the payment application that supports receiving NEXO-retailer messages via Intent
 - The _ECR on Device_ feature enabled via the dev-menu in the payment application
 
-PayEx developers can find the necessary version of the payment application in the `pax-payment-app` repository on the branch [swb-develop](https://github.com/PayEx/pax-payment-app/tree/swb-develop). Partners can download a packaged version via the TMS.
+PayEx developers can find the necessary version of the payment application in the `pax-payment-app` repository on the branch [swb-develop](https://github.com/PayEx/pax-payment-app/tree/swb-develop). 
+Partners may download a packaged version via the TMS, or request one from customer service agent.
 
 ## Usage
 
