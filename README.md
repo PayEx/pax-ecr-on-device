@@ -20,7 +20,7 @@ To verify that everything is functioning correctly, you can:
 - Send a login request
 - Access the payment application from the footer menu
 
-If the application stalls or becomes unresponsive, try restarting the terminal.
+Restart the terminal if the application stalls or becomes unresponsive.
 
 ## Contributing
 We welcome contributions to enhance the ECR on Device application. To contribute, please follow these steps:
