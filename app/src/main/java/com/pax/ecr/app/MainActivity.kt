@@ -132,6 +132,9 @@ class MainActivity : ComponentActivity() {
             AdminAction.OPEN_CONFIG_MENU -> {
                 openConfigMenu()
             }
+            AdminAction.BROADCAST_CONFIG -> {
+                throw UnsupportedOperationException()
+            }
         }
     }
 

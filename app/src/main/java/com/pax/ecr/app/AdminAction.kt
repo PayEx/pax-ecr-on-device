@@ -1,9 +1,10 @@
 package com.pax.ecr.app
 
 enum class AdminAction {
-    OPEN_ADMIN_MENU,
-    MOVE_TO_FRONT,
+    BROADCAST_CONFIG,
     MOVE_TO_BACK,
-    TEMPORARY_SHOW,
+    MOVE_TO_FRONT,
+    OPEN_ADMIN_MENU,
     OPEN_CONFIG_MENU,
+    TEMPORARY_SHOW,
 }
