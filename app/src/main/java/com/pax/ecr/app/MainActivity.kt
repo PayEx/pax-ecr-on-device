@@ -168,7 +168,7 @@ class MainActivity : ComponentActivity() {
     private fun sendMessageIntent(data: ByteArray) {
         hideNavBar()
         Intent().also { intent ->
-            intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_NEXO_MESSAGE")
+            intent.setAction("com.swedbankpay.payment.intent.TERMINAL_NEXO_MESSAGE")
             intent.putExtra(Intent.EXTRA_TEXT, data)
             sendBroadcast(intent)
         }
@@ -177,7 +177,7 @@ class MainActivity : ComponentActivity() {
     private fun sendAdminIntent(adminAction: AdminAction) {
         hideNavBar()
         Intent().also { intent ->
-            intent.setAction("com.optomany.AxeptPro.intent.TERMINAL_ADMIN")
+            intent.setAction("com.swedbankpay.payment.intent.TERMINAL_ADMIN")
             intent.putExtra(Intent.EXTRA_TEXT, adminAction.name)
             sendBroadcast(intent)
         }

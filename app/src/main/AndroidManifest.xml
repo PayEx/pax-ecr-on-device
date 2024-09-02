@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="com.optomany.AxeptPro.permission.ECR" />
+    <uses-permission android:name="com.swedbankpay.payment.permission.ECR" />
 
     <application
         android:allowBackup="true"
@@ -25,10 +25,10 @@
             </intent-filter>
         </activity>
         <receiver android:name=".NexoMessageIntentReceiver" android:exported="true"
-            android:permission="com.optomany.AxeptPro.permission.ECR">
+            android:permission="com.swedbankpay.payment.permission.ECR">
             <intent-filter>
-                <action android:name="com.optomany.AxeptPro.intent.ECR_NEXO_MESSAGE" />
-                <action android:name="com.optomany.AxeptPro.intent.ECR_ADMIN" />
+                <action android:name="com.swedbankpay.payment.intent.ECR_NEXO_MESSAGE" />
+                <action android:name="com.swedbankpay.payment.intent.ECR_ADMIN" />
             </intent-filter>
         </receiver>
     </application>
