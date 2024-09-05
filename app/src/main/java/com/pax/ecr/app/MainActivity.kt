@@ -17,6 +17,7 @@ import com.pax.ecr.app.ui.screen.ConfigScreen
 import com.pax.ecr.app.ui.screen.MainScreen
 import com.pax.ecr.app.ui.screen.PurchaseScreen
 import com.pax.ecr.app.ui.screen.ResponseScreen
+import com.pax.ecr.app.ui.screen.WelcomeScreen
 import com.pax.ecr.app.ui.theme.PaxTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,9 @@ var lastTransactionId by mutableStateOf("")
 var lastTransactionDatetime by mutableStateOf("")
 var lastResponseTransactionId by mutableStateOf("")
 var purchaseMenuVisible by mutableStateOf(false)
+var isLoggedIn by mutableStateOf(false)
+
+const val LOGGED_IN_BUNDLE_KEY = "loggedIn"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +52,8 @@ class MainActivity : ComponentActivity() {
         hideNavBar()
         config = restoreConfig()
         configMenuVisible = !config.isValid()
+        isLoggedIn = savedInstanceState?.getBoolean(LOGGED_IN_BUNDLE_KEY) == true
+
         setContent {
             PaxTheme {
                 Surface(
@@ -68,8 +74,15 @@ class MainActivity : ComponentActivity() {
                         PurchaseScreen {
                             sendMessageIntent(payment(it))
                         }
-                    } else {
+                    } else if (isLoggedIn) {
                         MainScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            handleAdminAction = ::handleAdminAction,
+                            handleAction = ::handleAction,
+                            onModalClose = ::hideNavBar,
+                        )
+                    } else {
+                        WelcomeScreen(
                             modifier = Modifier.fillMaxSize(),
                             handleAdminAction = ::handleAdminAction,
                             handleAction = ::handleAction,
@@ -79,6 +92,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(LOGGED_IN_BUNDLE_KEY, isLoggedIn)
+        super.onSaveInstanceState(outState)
     }
 
     private fun restoreConfig() =

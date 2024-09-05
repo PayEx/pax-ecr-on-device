@@ -80,25 +80,25 @@ fun TransactionSelectScreen(
             ) {
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Purchase",
+                    label = "Purchase",
                     onClick = { actionHandler(Action.PURCHASE) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.purchase_icon),
                 )
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Purchase with cashback",
+                    label = "Purchase with cashback",
                     onClick = { actionHandler(Action.PURCHASE_W_CASHBACK) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.cash_withdraw_icon),
                 )
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Refund",
+                    label = "Refund",
                     onClick = { actionHandler(Action.REFUND) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.refund_icon),
                 )
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Reversal",
+                    label = "Reversal",
                     onClick = { actionHandler(Action.REVERSAL) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.reversal_icon),
                 )
@@ -132,13 +132,13 @@ fun TransactionSelectScreen(
             ) {
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Login",
+                    label = "Login",
                     onClick = { actionHandler(Action.LOGIN) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.login_icon),
                 )
                 ActionButton(
                     modifier = modifier.padding(bottom = animatedSpaceBetweenButtons.dp),
-                    text = "Logout",
+                    label = "Logout",
                     onClick = { actionHandler(Action.LOGOUT) },
                     buttonIcon = ImageVector.vectorResource(R.drawable.logout_icon),
                 )
