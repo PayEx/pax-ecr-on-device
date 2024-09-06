@@ -1,4 +1,4 @@
-package com.pax.ecr.app.ui.screen
+package com.pax.ecr.app.ui.screen.config
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

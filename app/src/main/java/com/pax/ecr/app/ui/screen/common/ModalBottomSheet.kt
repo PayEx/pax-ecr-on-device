@@ -1,4 +1,4 @@
-package com.pax.ecr.app.ui.screen
+package com.pax.ecr.app.ui.screen.common
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet

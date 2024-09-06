@@ -1,4 +1,4 @@
-package com.pax.ecr.app.ui.screen
+package com.pax.ecr.app.ui.screen.common
 
 import SlideVertically
 import androidx.compose.foundation.Image
@@ -35,7 +35,7 @@ fun Footer(
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(48.dp),
     ) {
         SlideVertically(
             visible = true,

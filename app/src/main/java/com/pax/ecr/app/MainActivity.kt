@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,11 +14,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.pax.ecr.app.ui.screen.ConfigScreen
-import com.pax.ecr.app.ui.screen.MainScreen
-import com.pax.ecr.app.ui.screen.PurchaseScreen
-import com.pax.ecr.app.ui.screen.ResponseScreen
-import com.pax.ecr.app.ui.screen.WelcomeScreen
+import com.pax.ecr.app.NexoMessages.loginRequest
+import com.pax.ecr.app.NexoMessages.logout
+import com.pax.ecr.app.NexoMessages.payment
+import com.pax.ecr.app.NexoMessages.paymentWithCashback
+import com.pax.ecr.app.NexoMessages.refund
+import com.pax.ecr.app.NexoMessages.reversal
+import com.pax.ecr.app.ui.screen.ModeSelectorScreen
+import com.pax.ecr.app.ui.screen.PaymentModeScreen
+import com.pax.ecr.app.ui.screen.config.ConfigScreen
+import com.pax.ecr.app.ui.screen.config.ResponseScreen
+import com.pax.ecr.app.ui.screen.restaurant.RestaurantScreen
+import com.pax.ecr.app.ui.screen.retail.RetailerScreen
 import com.pax.ecr.app.ui.theme.PaxTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,12 +34,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
-import java.nio.charset.Charset
-import java.text.DecimalFormat
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -41,10 +43,15 @@ var configMenuVisible by mutableStateOf(false)
 var lastTransactionId by mutableStateOf("")
 var lastTransactionDatetime by mutableStateOf("")
 var lastResponseTransactionId by mutableStateOf("")
-var purchaseMenuVisible by mutableStateOf(false)
-var isLoggedIn by mutableStateOf(false)
+var selectedMode by mutableStateOf<Mode?>(null)
 
-const val LOGGED_IN_BUNDLE_KEY = "loggedIn"
+enum class Mode {
+    PAYMENT_APPLICATION,
+    RESTAURANT,
+    RETAIL,
+}
+
+const val MODE_BUNDLE_KEY = "mode"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +59,7 @@ class MainActivity : ComponentActivity() {
         hideNavBar()
         config = restoreConfig()
         configMenuVisible = !config.isValid()
-        isLoggedIn = savedInstanceState?.getBoolean(LOGGED_IN_BUNDLE_KEY) == true
+        selectedMode = savedInstanceState?.getString(MODE_BUNDLE_KEY)?.let { Mode.valueOf(it) }
 
         setContent {
             PaxTheme {
@@ -70,32 +77,40 @@ class MainActivity : ComponentActivity() {
                             config = it
                             saveConfig(it)
                         }
-                    } else if (purchaseMenuVisible) {
-                        PurchaseScreen {
-                            sendMessageIntent(payment(it))
-                        }
-                    } else if (isLoggedIn) {
-                        MainScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            handleAdminAction = ::handleAdminAction,
-                            handleAction = ::handleAction,
-                            onModalClose = ::hideNavBar,
-                        )
                     } else {
-                        WelcomeScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            handleAdminAction = ::handleAdminAction,
-                            handleAction = ::handleAction,
-                            onModalClose = ::hideNavBar,
-                        )
+                        when (selectedMode) {
+                            Mode.PAYMENT_APPLICATION ->
+                                PaymentModeScreen(
+                                    modifier = Modifier.fillMaxSize(),
+                                    handleAdminAction = ::handleAdminAction,
+                                    handleAction = ::handleAction,
+                                    onModalClose = ::hideNavBar,
+                                )
+
+                            Mode.RESTAURANT ->
+                                RestaurantScreen {
+                                    sendMessageIntent(payment(it))
+                                }
+                            Mode.RETAIL ->
+                                RetailerScreen {
+                                    sendMessageIntent(payment(it))
+                                }
+                            null ->
+                                ModeSelectorScreen(modifier = Modifier.fillMaxHeight(.93f), modeSelector = ::handleModeSelected)
+                        }
                     }
                 }
             }
         }
     }
 
+    private fun handleModeSelected(mode: Mode) {
+        handleAction(Action.LOGIN)
+        selectedMode = mode
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(LOGGED_IN_BUNDLE_KEY, isLoggedIn)
+        selectedMode?.let { outState.putString(MODE_BUNDLE_KEY, it.name) }
         super.onSaveInstanceState(outState)
     }
 
@@ -153,6 +168,10 @@ class MainActivity : ComponentActivity() {
             AdminAction.BROADCAST_CONFIG -> {
                 throw UnsupportedOperationException()
             }
+
+            AdminAction.MODE_SELECTOR -> {
+                selectedMode = null
+            }
         }
     }
 
@@ -167,9 +186,7 @@ class MainActivity : ComponentActivity() {
             Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
             Action.LOGIN -> sendMessageIntent(loginRequest())
             Action.LOGOUT -> sendMessageIntent(logout())
-            Action.PURCHASE -> {
-                purchaseMenuVisible = true
-            }
+            Action.PURCHASE -> sendMessageIntent(payment(amount = BigDecimal.TEN))
             Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
             Action.REFUND -> sendMessageIntent(refund())
             Action.REVERSAL -> sendMessageIntent(reversal())
@@ -200,96 +217,4 @@ class MainActivity : ComponentActivity() {
             sendBroadcast(intent)
         }
     }
-
-    private fun randomServiceId() = Random.nextInt(0, Int.MAX_VALUE)
-
-    private fun randomTransactionId() =
-        Random.nextInt(0, Int.MAX_VALUE).also {
-            lastTransactionId = it.toString()
-        }
-
-    private fun now() = ZonedDateTime.now(ZoneId.of("Europe/Oslo")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-
-    private fun loginRequest() =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Login" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <LoginRequest OperatorID="Cashier1" OperatorLanguage="en" ShiftNumber="2">
-                <DateTime>${now()}</DateTime>
-                <SaleSoftware ApplicationName="TestScripts" CertificationCode="ECTS2PS001" ProviderIdentification="swedbankpay" SoftwareVersion="1.0"/>
-                <SaleTerminalData TerminalEnvironment="Attended">
-                    <SaleCapabilities>PrinterReceipt</SaleCapabilities>
-                    <SaleProfile/>
-                </SaleTerminalData>
-            </LoginRequest>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
-
-    private fun logout() =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Logout" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <LogoutRequest MaintenanceAllowed="true"/>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
-
-    private fun payment(amount: BigDecimal) =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <PaymentRequest>
-                <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
-                </SaleData>
-                <PaymentTransaction>
-                    <AmountsReq CashBackAmount="0" Currency="${config.currencyCode}"  RequestedAmount="${DecimalFormat(
-            "#0.##",
-        ).format(amount)}"/>
-                </PaymentTransaction>
-            </PaymentRequest>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
-
-    private fun paymentWithCashback() =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <PaymentRequest>
-                <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
-                </SaleData>
-                <PaymentTransaction>
-                    <AmountsReq CashBackAmount="50" Currency="${config.currencyCode}"  RequestedAmount="100"/>
-                </PaymentTransaction>
-            </PaymentRequest>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
-
-    private fun refund() =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Payment" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <PaymentRequest>
-                <SaleData TokenRequestedType="Customer">
-                    <SaleTransactionID TimeStamp="${now()}" TransactionID="${randomTransactionId()}"/>
-                </SaleData>
-                <PaymentTransaction>
-                    <AmountsReq Currency="${config.currencyCode}"  RequestedAmount="100"/>
-                </PaymentTransaction>
-                <PaymentData PaymentType="Refund"/>
-            </PaymentRequest>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
-
-    private fun reversal() =
-        """
-        <SaleToPOIRequest>
-            <MessageHeader MessageCategory="Reversal" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
-            <ReversalRequest ReversalReason="MerchantCancel">
-                <OriginalPOITransaction POIID="${config.poiId}" SaleID="${config.saleId}">
-                    <POITransactionID TimeStamp="$lastTransactionDatetime" TransactionID="$lastResponseTransactionId" />
-                </OriginalPOITransaction>
-            </ReversalRequest>
-        </SaleToPOIRequest>
-        """.trimIndent().toByteArray(Charset.defaultCharset())
 }

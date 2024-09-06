@@ -5,9 +5,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 @Composable
 fun SlideVertically(
+    modifier: Modifier = Modifier,
     visible: Boolean = false,
     initialOffsetY: Int? = null,
     targetOffsetY: Int? = null,
@@ -18,6 +20,7 @@ fun SlideVertically(
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
+        modifier = modifier,
         visible = visible,
         label = "Slide vertically Animation",
         enter =

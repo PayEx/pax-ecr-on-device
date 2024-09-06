@@ -1,4 +1,4 @@
-package com.pax.ecr.app.ui.screen
+package com.pax.ecr.app.ui.screen.payment
 
 import SlideVertically
 import androidx.compose.animation.core.animateFloatAsState

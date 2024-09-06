@@ -21,15 +21,12 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         lastResponseTransactionId = nexoMessage.extractPOITransactionID()
         lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
         responseText = nexoMessage.orEmpty()
-        purchaseMenuVisible = false
         if (nexoMessage.isLoginResponseFailure()) {
             Toast.makeText(
                 context,
                 "Login failed",
                 Toast.LENGTH_LONG,
             ).show()
-        } else if (nexoMessage.isLoginResponseSuccess()) {
-            isLoggedIn = true
         }
     }
 
@@ -58,14 +55,6 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
                 ?.attributes?.getNamedItem("Result")
                 ?.nodeValue ?: ""
         }.let { it != "Success" && it.isNotBlank() }
-
-    private fun String?.isLoginResponseSuccess() =
-        extractCommon {
-            it.getElementsByTagName("LoginResponse")?.item(0)
-                ?.childNodes?.item(0)
-                ?.attributes?.getNamedItem("Result")
-                ?.nodeValue ?: ""
-        }.let { it == "Success" }
 
     private fun String?.extractCommon(extraction: (Document) -> String) =
         try {

@@ -12,9 +12,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.pax.ecr.app.Action
 import com.pax.ecr.app.AdminAction
+import com.pax.ecr.app.ui.screen.common.Footer
+import com.pax.ecr.app.ui.screen.common.ModalBottomSheet
+import com.pax.ecr.app.ui.screen.payment.TransactionSelectScreen
 
 @Composable
-fun MainScreen(
+fun PaymentModeScreen(
     handleAdminAction: (AdminAction) -> Unit,
     onModalClose: () -> Unit,
     modifier: Modifier = Modifier,
