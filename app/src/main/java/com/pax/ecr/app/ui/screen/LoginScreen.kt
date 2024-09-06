@@ -6,9 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +26,6 @@ import com.pax.ecr.app.Action
 import com.pax.ecr.app.R
 import com.pax.ecr.app.ui.component.ActionButton
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -34,8 +33,8 @@ fun LoginScreen(
     actionHandler: (Action) -> Unit,
 ) = Box(
     modifier =
-        Modifier
-            .fillMaxSize()
+        modifier
+            .fillMaxWidth()
             .padding(top = 36.dp, start = 24.dp, end = 24.dp),
 ) {
     val slideInDurationMillis = 1500
