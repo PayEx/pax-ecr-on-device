@@ -20,11 +20,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +58,7 @@ private data class Product(
     val description: String,
     val price: BigDecimal,
     @DrawableRes val image: Int,
-    var amountSelected: Int = 0,
+    val amountSelected: MutableIntState = mutableIntStateOf(0),
 )
 
 @Composable
@@ -85,29 +85,27 @@ private fun ItemList() {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         items(items, { it.title }) {
-            var item by remember { mutableStateOf(it) }
             Column(
                 modifier =
                     Modifier.height(250.dp).clickable {
-                        item = item.copy(amountSelected = item.amountSelected.inc())
-                        it.amountSelected++
+                        it.amountSelected.intValue++
                         selected++
                         price += it.price
                     },
             ) {
                 Image(
-                    painter = painterResource(id = item.image),
-                    contentDescription = item.title,
+                    painter = painterResource(id = it.image),
+                    contentDescription = it.title,
                     modifier = Modifier.background(Color.LightGray).height(180.dp).fillMaxWidth(),
                     contentScale = ContentScale.FillHeight,
                 )
                 Row {
-                    if (item.amountSelected > 0) Text("${item.amountSelected}x ", fontSize = 16.sp)
-                    Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    if (it.amountSelected.intValue > 0) Text("${it.amountSelected}x ", fontSize = 16.sp)
+                    Text(it.title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
-                Text(item.description, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(it.description, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(Modifier.height(4.dp))
-                Text(formatAmountInNOK(item.price))
+                Text(formatAmountInNOK(it.price))
             }
         }
         item(key = "spacer-at-end") {
@@ -135,7 +133,7 @@ private fun Checkout(onCheckout: (BigDecimal) -> Unit) {
                 price = BigDecimal.ZERO
                 selected = 0
                 items.forEach {
-                    it.amountSelected = 0
+                    it.amountSelected.intValue = 0
                 }
             },
         horizontalArrangement = Arrangement.SpaceBetween,

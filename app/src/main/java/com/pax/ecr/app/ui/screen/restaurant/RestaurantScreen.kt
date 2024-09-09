@@ -21,11 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,7 +76,7 @@ private data class FoodItem(
     val description: String,
     val price: BigDecimal,
     @DrawableRes val image: Int,
-    var amountSelected: Int = 0,
+    val amountSelected: MutableIntState = mutableIntStateOf(0),
 )
 
 @Composable
@@ -117,30 +117,34 @@ private fun Banner() {
 private fun ItemList() {
     LazyColumn {
         items(items, key = { it.title }) {
-            var item by remember { mutableStateOf(it) }
             Row(
                 modifier =
                     Modifier.fillMaxWidth().height(110.dp).padding(vertical = 5.dp, horizontal = 12.dp).clickable {
-                        item = item.copy(amountSelected = item.amountSelected.inc())
-                        it.amountSelected++
+                        it.amountSelected.intValue++
                         selected++
                         price += it.price
                     },
             ) {
                 Column(modifier = Modifier.weight(2f)) {
                     Row {
-                        if (item.amountSelected > 0) Text("${item.amountSelected}x ", color = Color(114, 157, 225), fontSize = 16.sp)
-                        Text(item.title, color = Color.White, fontSize = 16.sp)
+                        if (it.amountSelected.intValue > 0) {
+                            Text(
+                                "${it.amountSelected.intValue}x ",
+                                color = Color(114, 157, 225),
+                                fontSize = 16.sp,
+                            )
+                        }
+                        Text(it.title, color = Color.White, fontSize = 16.sp)
                     }
-                    Text(item.description, color = Color.LightGray)
+                    Text(it.description, color = Color.LightGray)
                     Text(
-                        formatAmountInNOK(item.price),
+                        formatAmountInNOK(it.price),
                         color = Color(114, 157, 225),
                     )
                 }
                 Image(
-                    painter = painterResource(id = item.image),
-                    contentDescription = item.title,
+                    painter = painterResource(id = it.image),
+                    contentDescription = it.title,
                     modifier =
                         Modifier.weight(
                             1f,
@@ -177,7 +181,7 @@ private fun Checkout(onPaymentSelect: (BigDecimal) -> Unit) {
                 price = BigDecimal.ZERO
                 selected = 0
                 items.forEach {
-                    it.amountSelected = 0
+                    it.amountSelected.intValue = 0
                 }
             },
         horizontalArrangement = Arrangement.SpaceBetween,
