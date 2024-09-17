@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,11 +36,17 @@ fun ModeSelectorScreen(
             image = R.drawable.pizza,
             modifier = Modifier.fillMaxWidth().weight(1f),
         ) { modeSelector(Mode.RESTAURANT) }
+
+        ButtonSpacer()
+
         ModeButton(
             label = "Retail",
             image = R.drawable.retail,
             modifier = Modifier.fillMaxWidth().weight(1f),
         ) { modeSelector(Mode.RETAIL) }
+
+        ButtonSpacer()
+
         ModeButton(
             label = "Payment Application",
             image = R.drawable.pax,
@@ -46,6 +54,16 @@ fun ModeSelectorScreen(
         ) { modeSelector(Mode.PAYMENT_APPLICATION) }
     }
 }
+
+@Composable
+private fun ButtonSpacer() =
+    Spacer(
+        modifier =
+            Modifier
+                .height(4.dp)
+                .fillMaxWidth()
+                .background(Color.Black),
+    )
 
 @Composable
 private fun ModeButton(

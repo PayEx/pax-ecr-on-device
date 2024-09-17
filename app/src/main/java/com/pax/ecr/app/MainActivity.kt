@@ -88,11 +88,11 @@ class MainActivity : ComponentActivity() {
                                 )
 
                             Mode.RESTAURANT ->
-                                RestaurantScreen {
+                                RestaurantScreen(onBack = ::handleModeBack) {
                                     sendMessageIntent(payment(it))
                                 }
                             Mode.RETAIL ->
-                                RetailerScreen {
+                                RetailerScreen(onBack = ::handleModeBack) {
                                     sendMessageIntent(payment(it))
                                 }
                             null ->
@@ -102,6 +102,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun handleModeBack() {
+        selectedMode = null
+        hideNavBar()
     }
 
     private fun handleModeSelected(mode: Mode) {

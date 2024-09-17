@@ -18,6 +18,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
@@ -63,11 +67,13 @@ private data class Product(
 
 @Composable
 fun RetailerScreen(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     onCheckout: (BigDecimal) -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize().background(Color.White)) {
-        Column(modifier = Modifier.align(Alignment.TopCenter)) {
+        Header(onBack)
+        Column(modifier = Modifier.align(Alignment.TopCenter).padding(top = 60.dp)) {
             ItemList()
         }
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
@@ -100,7 +106,7 @@ private fun ItemList() {
                     contentScale = ContentScale.FillHeight,
                 )
                 Row {
-                    if (it.amountSelected.intValue > 0) Text("${it.amountSelected}x ", fontSize = 16.sp)
+                    if (it.amountSelected.intValue > 0) Text("${it.amountSelected.intValue}x ", fontSize = 16.sp)
                     Text(it.title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
                 Text(it.description, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -156,5 +162,31 @@ private fun Checkout(onCheckout: (BigDecimal) -> Unit) {
             Text("Click here to order", fontWeight = FontWeight.Medium)
         }
         Text(formatAmountInNOK(price), modifier = Modifier.padding(10.dp))
+    }
+}
+
+@Composable
+private fun Header(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth().height(60.dp),
+    ) {
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier.align(Alignment.CenterStart),
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = "Back",
+            )
+        }
+        Text(
+            text = "PayEx Wear & Gear",
+            modifier = Modifier.align(Alignment.Center),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }

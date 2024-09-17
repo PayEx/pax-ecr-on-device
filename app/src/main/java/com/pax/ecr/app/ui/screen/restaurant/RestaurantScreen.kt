@@ -13,12 +13,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
@@ -56,12 +61,13 @@ private var selected by mutableIntStateOf(0)
 
 @Composable
 fun RestaurantScreen(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     onCheckout: (BigDecimal) -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize().background(Color.DarkGray)) {
         Column(modifier = Modifier.align(Alignment.TopCenter)) {
-            Banner()
+            Banner(onBack)
             Spacer(Modifier.height(30.dp))
             ItemList()
         }
@@ -80,7 +86,7 @@ private data class FoodItem(
 )
 
 @Composable
-private fun Banner() {
+private fun Banner(onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxWidth().height(270.dp)) {
         Image(
             painter = painterResource(R.drawable.pizza),
@@ -88,6 +94,22 @@ private fun Banner() {
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.align(Alignment.TopCenter).height(175.dp),
         )
+        Box(
+            modifier =
+                Modifier.align(Alignment.TopStart).padding(start = 10.dp, top = 10.dp).size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(114, 157, 225)),
+            contentAlignment = Alignment.Center,
+        ) {
+            IconButton(
+                onClick = onBack,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = "Back",
+                )
+            }
+        }
         Box(
             modifier =
                 Modifier.width(100.dp).height(160.dp).padding(bottom = 30.dp)
@@ -197,7 +219,7 @@ private fun Checkout(onPaymentSelect: (BigDecimal) -> Unit) {
                 modifier =
                     Modifier.clip(CircleShape).background(
                         Color.DarkGray,
-                    ).width(35.dp).height(35.dp),
+                    ).size(35.dp),
             ) {
                 Text(selected.toString(), color = Color(114, 157, 225))
             }
