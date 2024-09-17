@@ -71,7 +71,7 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("com.github.skydoves:cloudy:0.1.2")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
 
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
     testImplementation("junit:junit:4.13.2")
