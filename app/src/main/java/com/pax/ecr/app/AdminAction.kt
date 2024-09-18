@@ -8,4 +8,5 @@ enum class AdminAction {
     OPEN_CONFIG_MENU,
     TEMPORARY_SHOW,
     MODE_SELECTOR,
+    SHUTDOWN,
 }

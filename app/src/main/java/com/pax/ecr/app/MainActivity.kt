@@ -177,6 +177,10 @@ class MainActivity : ComponentActivity() {
             AdminAction.MODE_SELECTOR -> {
                 selectedMode = null
             }
+
+            AdminAction.SHUTDOWN -> {
+                this.finishAndRemoveTask()
+            }
         }
     }
 

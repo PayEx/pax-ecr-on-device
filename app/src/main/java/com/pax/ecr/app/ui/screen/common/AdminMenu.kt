@@ -48,10 +48,11 @@ fun AdminMenu(
             modifier = Modifier.padding(vertical = 24.dp),
         ) {
             AdminMenuButton("Admin Menu") { actionHandler(AdminAction.OPEN_ADMIN_MENU) }
-            AdminMenuButton("Show payment app") { actionHandler(AdminAction.MOVE_TO_FRONT) }
-            AdminMenuButton("Temporarily show payment app") { actionHandler(AdminAction.TEMPORARY_SHOW) }
             AdminMenuButton("Configuration") { actionHandler(AdminAction.OPEN_CONFIG_MENU) }
             AdminMenuButton("Go to mode selector") { actionHandler(AdminAction.MODE_SELECTOR) }
+            AdminMenuButton("Show payment app") { actionHandler(AdminAction.MOVE_TO_FRONT) }
+            AdminMenuButton("Shutdown ECR on Device") { actionHandler(AdminAction.SHUTDOWN) }
+            AdminMenuButton("Temporarily show payment app") { actionHandler(AdminAction.TEMPORARY_SHOW) }
         }
     }
 }
