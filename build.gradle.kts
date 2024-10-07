@@ -18,6 +18,6 @@ subprojects {
     }
 
     dependencies {
-        ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.4")
+        ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.15")
     }
 }
