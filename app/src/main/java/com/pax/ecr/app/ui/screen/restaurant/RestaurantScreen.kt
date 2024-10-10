@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pax.ecr.app.R
+import com.pax.ecr.app.receiptElements
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -145,6 +146,7 @@ private fun ItemList() {
                         it.amountSelected.intValue++
                         selected++
                         price += it.price
+                        receiptElements[it.title] = receiptElements.getOrDefault(it.title, 0) + 1
                     },
             ) {
                 Column(modifier = Modifier.weight(2f)) {

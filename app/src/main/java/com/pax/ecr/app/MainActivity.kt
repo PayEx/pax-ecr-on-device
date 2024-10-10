@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -18,10 +19,12 @@ import com.pax.ecr.app.NexoMessages.loginRequest
 import com.pax.ecr.app.NexoMessages.logout
 import com.pax.ecr.app.NexoMessages.payment
 import com.pax.ecr.app.NexoMessages.paymentWithCashback
+import com.pax.ecr.app.NexoMessages.receipt
 import com.pax.ecr.app.NexoMessages.refund
 import com.pax.ecr.app.NexoMessages.reversal
 import com.pax.ecr.app.ui.screen.ModeSelectorScreen
 import com.pax.ecr.app.ui.screen.PaymentModeScreen
+import com.pax.ecr.app.ui.screen.PrintReceiptScreen
 import com.pax.ecr.app.ui.screen.config.ConfigScreen
 import com.pax.ecr.app.ui.screen.config.ResponseScreen
 import com.pax.ecr.app.ui.screen.restaurant.RestaurantScreen
@@ -44,6 +47,8 @@ var lastTransactionId by mutableStateOf("")
 var lastTransactionDatetime by mutableStateOf("")
 var lastResponseTransactionId by mutableStateOf("")
 var selectedMode by mutableStateOf<Mode?>(null)
+var receiptData by mutableStateOf("")
+var receiptElements = mutableStateMapOf<String, Int>()
 
 enum class Mode {
     PAYMENT_APPLICATION,
@@ -72,6 +77,19 @@ class MainActivity : ComponentActivity() {
                         ResponseScreen(response = responseText) {
                             responseText = ""
                         }
+                    } else if (receiptData.isNotBlank()) {
+                        PrintReceiptScreen(
+                            onPrintReceipt = {
+                                handleAction(Action.PRINT_RECEIPT).also {
+                                    receiptData = ""
+                                    receiptElements.clear()
+                                }
+                            },
+                            onContinue = {
+                                receiptData = ""
+                                receiptElements.clear()
+                            },
+                        )
                     } else if (configMenuVisible) {
                         ConfigScreen(config, { configMenuVisible = false }) {
                             config = it
@@ -195,6 +213,7 @@ class MainActivity : ComponentActivity() {
             Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
             Action.LOGIN -> sendMessageIntent(loginRequest())
             Action.LOGOUT -> sendMessageIntent(logout())
+            Action.PRINT_RECEIPT -> sendMessageIntent(receipt(receiptData))
             Action.PURCHASE -> sendMessageIntent(payment(amount = BigDecimal.TEN))
             Action.PURCHASE_W_CASHBACK -> sendMessageIntent(paymentWithCashback())
             Action.REFUND -> sendMessageIntent(refund())
