@@ -69,7 +69,6 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation(platform("androidx.compose:compose-bom:2024.09.03"))
-    implementation("com.github.skydoves:cloudy:0.1.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
