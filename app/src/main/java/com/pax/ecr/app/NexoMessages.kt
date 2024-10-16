@@ -124,13 +124,13 @@ data class CardholderReceipt(
 ) {
     fun toReceiptData(items: Map<String, Int> = emptyMap()): String {
         return """
-                                                            <OutputText StartRow="1">Customer Receipt</OutputText>
-                                                            <OutputText StartRow="2">Check out the integration guide for examples</OutputText>
-                                                            <OutputText StartRow="4">${Cardholder.Mandatory.Outcome.AuthorisationResponder} ${Cardholder.Mandatory.Outcome.DebitStatus} ${Cardholder.Mandatory.Outcome.ApprovalCode} ${Cardholder.Mandatory.Outcome.AuthorisationResponseCode}</OutputText>
-                                                            <OutputText StartRow="5">${Cardholder.Mandatory.TimeStamp.TimeOfPayment} ${Cardholder.Mandatory.TimeStamp.DateOfPayment}
-                                                            
-                                                            </OutputText>
-                                                            ${if (items.isNotEmpty()) {
+                                                                        <OutputText StartRow="1">Customer Receipt</OutputText>
+                                                                        <OutputText StartRow="2">Check out the integration guide for examples</OutputText>
+                                                                        <OutputText StartRow="4">${Cardholder.Mandatory.Outcome.AuthorisationResponder} ${Cardholder.Mandatory.Outcome.DebitStatus} ${Cardholder.Mandatory.Outcome.ApprovalCode} ${Cardholder.Mandatory.Outcome.AuthorisationResponseCode}</OutputText>
+                                                                        <OutputText StartRow="5">${Cardholder.Mandatory.TimeStamp.TimeOfPayment} ${Cardholder.Mandatory.TimeStamp.DateOfPayment}
+                                                                        
+                                                                        </OutputText>
+                                                                        ${if (items.isNotEmpty()) {
             items.keys.mapIndexed {
                     index,
                     key,
@@ -140,18 +140,18 @@ data class CardholderReceipt(
         } else {
             ""
         }}
-                                <OutputText StartRow="${items.size + 7}">
-                                
-                                
-                                </OutputText>
-                                                            <OutputText StartRow="${items.size + 8}">${Cardholder.Mandatory.Payment.PaymentAmount} ${Cardholder.Mandatory.Payment.Currency}
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                      
-                                                            </OutputText>
+                                            <OutputText StartRow="${items.size + 7}">
+                                            
+                                            
+                                            </OutputText>
+                                                                        <OutputText StartRow="${items.size + 8}">${Cardholder.Mandatory.Payment.PaymentAmount} ${Cardholder.Mandatory.Payment.Currency}
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                                  
+                                                                        </OutputText>
             """.trimIndent()
     }
 }
