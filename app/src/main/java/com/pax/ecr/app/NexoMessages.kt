@@ -123,15 +123,8 @@ object NexoMessages {
 data class CardholderReceipt(
     @SerialName("Cardholder") val cardholder: Cardholder,
 ) {
-    fun toReceiptData(items: Map<String, Int> = emptyMap()): String {
-        return """
-                                                                                                <OutputText StartRow="1">Customer Receipt</OutputText>
-                                                                                                <OutputText StartRow="2">Check out the integration guide for examples</OutputText>
-                                                                                                <OutputText StartRow="4">${cardholder.mandatory.outcome.authorisationResponder} ${cardholder.mandatory.outcome.debitStatus} ${cardholder.mandatory.outcome.approvalCode} ${cardholder.mandatory.outcome.authorisationResponseCode}</OutputText>
-                                                                                                <OutputText StartRow="5">${cardholder.mandatory.timeStamp.timeOfPayment} ${cardholder.mandatory.timeStamp.dateOfPayment}
-                                                                                                
-                                                                                                </OutputText>
-                                                                                                ${if (items.isNotEmpty()) {
+    val receiptItems = { items: Map<String, Int> ->
+        if (items.isNotEmpty()) {
             items.keys.mapIndexed {
                     index,
                     key,
@@ -140,17 +133,33 @@ data class CardholderReceipt(
             }.joinToString("\n")
         } else {
             ""
-        }}
-                                                                    <OutputText StartRow="${items.size + 7}">
-                                                                    
-                                                                    
-                                                                    </OutputText>
-                                                                                                <OutputText StartRow="${items.size + 8}">${cardholder.mandatory.payment.paymentAmount} ${cardholder.mandatory.payment.currency}
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                          
-                                                                                                </OutputText>
+        }
+    }
+
+    private val outcome =
+        "${cardholder.mandatory.outcome.authorisationResponder} ${cardholder.mandatory.outcome.debitStatus} " +
+            "${cardholder.mandatory.outcome.approvalCode} ${cardholder.mandatory.outcome.authorisationResponseCode}"
+    private val timestamp = "${cardholder.mandatory.timeStamp.timeOfPayment} ${cardholder.mandatory.timeStamp.dateOfPayment}"
+
+    fun toReceiptData(items: Map<String, Int> = emptyMap()): String {
+        return """
+            <OutputText StartRow="1">Customer Receipt</OutputText>
+            <OutputText StartRow="2">Check out the integration guide for examples</OutputText>
+            <OutputText StartRow="4">$outcome</OutputText>
+            <OutputText StartRow="5">$timestamp
+            
+            
+            </OutputText>
+            ${receiptItems(items)} 
+            <OutputText StartRow="${items.size + 7}">${cardholder.mandatory.payment.paymentAmount} ${cardholder.mandatory.payment.currency}
+            
+            
+            
+            
+            
+            
+            
+            </OutputText>
             """.trimIndent()
     }
 }
