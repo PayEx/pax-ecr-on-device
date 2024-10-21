@@ -1,17 +1,19 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.serialization)
 }
 
 android {
     namespace = "com.pax.ecr.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.pax.ecr.app"
         minSdk = 27
+        //noinspection ExpiredTargetSdkVersion App will not be published to Google Play
+        targetSdk = 28
         versionCode = 1
         versionName = "1.0"
 
@@ -51,27 +53,25 @@ android {
 }
 
 dependencies {
+    // Debug Dependencies
+    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.ui.tooling)
 
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.03"))
+    // Main Implementation Dependencies
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.material.icons)
+    implementation(platform(libs.androidx.compose.bom.main))
 
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
 
-    implementation("androidx.activity:activity-compose:1.9.2")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
-    implementation(platform("androidx.compose:compose-bom:2024.09.03"))
-
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
-    testImplementation("junit:junit:4.13.2")
+    // Test Dependencies
+    testImplementation(libs.assertk.jvm)
+    testImplementation(libs.junit)
 }

@@ -1,0 +1,42 @@
+[versions]
+junit = "4.13.2"
+assertk = "0.28.1"
+activity_compose = "1.9.3"
+material3 = "latest.release"
+compose_bom = "2024.10.00"
+core_ktx = "1.13.1"
+lifecycle_ktx = "2.8.6"
+serialization_json = "1.7.3"
+agp = "8.7.1"
+kotlin = "2.0.21"
+ktlint = "12.1.1"
+material_icons = "1.7.4"
+
+[libraries]
+
+# Debug Dependencies
+androidx_ui_test_manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx_ui_tooling = { module = "androidx.compose.ui:ui-tooling" }
+
+# Main Implementation Dependencies
+androidx_activity_compose = { module = "androidx.activity:activity-compose", version.ref = "activity_compose" }
+androidx_material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx_ui = { module = "androidx.compose.ui:ui" }
+androidx_ui_graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx_ui_tooling_preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx_core_ktx = { module = "androidx.core:core-ktx", version.ref = "core_ktx" }
+androidx_lifecycle_runtime_ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle_ktx" }
+androidx_compose_bom_main = { module = "androidx.compose:compose-bom", version.ref = "compose_bom" }
+kotlinx_serialization_json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization_json" }
+androidx_material_icons = {  group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material_icons" }
+
+# Test Dependencies
+assertk_jvm = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertk" }
+junit = { module = "junit:junit", version.ref = "junit" }
+
+[plugins]
+android_application = { id = "com.android.application", version.ref = "agp" }
+kotlin_android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

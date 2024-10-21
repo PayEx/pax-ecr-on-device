@@ -1,8 +1,8 @@
 
 plugins {
-    id("com.android.application") version "8.7.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.ktlint)
 }
 
 subprojects {
