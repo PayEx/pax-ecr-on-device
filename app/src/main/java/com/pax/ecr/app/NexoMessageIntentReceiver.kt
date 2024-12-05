@@ -6,6 +6,8 @@ import android.content.Intent
 import android.widget.Toast
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.w3c.dom.Document
 import org.w3c.dom.NodeList
@@ -27,7 +29,9 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         intent: Intent,
     ) {
         val nexoMessage = intent.extras?.getByteArray(Intent.EXTRA_TEXT)?.toString(Charset.defaultCharset())
-        moveToForeground(context)
+        if (!nexoMessage.isConfigMessage()) {
+            moveToForeground(context)
+        }
         lastResponseTransactionId = nexoMessage.extractPOITransactionID()
         lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
         responseText = nexoMessage.orEmpty()
@@ -103,5 +107,22 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
             ""
         } catch (e: NullPointerException) {
             ""
+        }
+
+    @Serializable
+    private data class ConfigMessage(
+        @SerialName("_id") val id: Int,
+        val communicationType: String,
+        val ecrPort: String? = null,
+        val terminalIp: String? = null,
+        val terminalPort: String? = null,
+    )
+
+    private fun String?.isConfigMessage() =
+        try {
+            json.decodeFromString<ConfigMessage>(this!!)
+            true
+        } catch (e: Exception) {
+            false
         }
 }
