@@ -7,13 +7,15 @@ A demo _ECR on Device_ Android application designed to run on the PAX family of 
 To run this application, you will need:
 - A compatible payment terminal
 - A version of the payment application that supports receiving NEXO-retailer messages via Intent
-- The _ECR on Device_ feature enabled via the dev-menu in the payment application
+- A POI with _ECR Profile_ set to _Embedded (ECR on Device)_ 
 
 PayEx developers can find the necessary version of the payment application in the `pax-payment-app` repository on the branch [swb-develop](https://github.com/PayEx/pax-payment-app/tree/swb-develop). 
 Partners may download a packaged version via the TMS, or request one from customer service agent.
 
 ## Usage
 
+Before running this application, ensure that the payment application has been successfully initialised; the 
+terminal is successfully initialised when you see a small spinner in the middle of the screen and a logo in the footer.
 Upon launching the _ECR on Device_ application, you will be prompted to configure the app. Enter the POI-ID and the currency associated with that POI. If you are debugging, consider enabling the _Response-screen_ flag to view responses from the terminal.
 
 To verify that everything is functioning correctly, you can:
