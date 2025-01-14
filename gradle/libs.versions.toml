@@ -10,7 +10,7 @@ serialization_json = "1.7.3"
 agp = "8.7.2"
 kotlin = "2.1.0"
 ktlint = "12.1.1"
-material_icons = "1.7.5"
+material_icons = "1.7.6"
 
 [libraries]
 
