@@ -1,7 +1,7 @@
 [versions]
 junit = "4.13.2"
 assertk = "0.28.1"
-activity_compose = "1.9.3"
+activity_compose = "1.10.0"
 material3 = "latest.release"
 compose_bom = "2024.12.01"
 core_ktx = "1.15.0"
