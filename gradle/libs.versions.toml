@@ -9,7 +9,7 @@ lifecycle_ktx = "2.8.7"
 serialization_json = "1.8.0"
 agp = "8.8.1"
 kotlin = "2.1.10"
-ktlint = "12.1.2"
+ktlint = "12.2.0"
 material_icons = "1.7.8"
 
 [libraries]
