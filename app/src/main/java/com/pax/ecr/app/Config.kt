@@ -8,9 +8,10 @@ data class Config(
     val currencyCode: String?,
     val saleId: String?,
     val responseScreenEnabled: Boolean = false,
+    val enableSaleCapabilities: Boolean = false,
 ) {
     companion object {
-        val DEFAULT = Config(null, null, "ECR1", false)
+        val DEFAULT = Config(null, null, "ECR1", false, false)
     }
 
     fun isValid() =

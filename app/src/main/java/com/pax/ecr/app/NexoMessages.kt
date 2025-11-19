@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 object NexoMessages {
-    fun loginRequest() =
+    fun loginRequest(enableSaleCapabilities: Boolean) =
         """
         <SaleToPOIRequest>
             <MessageHeader MessageCategory="Login" MessageClass="Service" MessageType="Request" POIID="${config.poiId}" ProtocolVersion="3.1" SaleID="${config.saleId}" ServiceID="${randomServiceId()}"/>
@@ -19,7 +19,7 @@ object NexoMessages {
                 <DateTime>${now()}</DateTime>
                 <SaleSoftware ApplicationName="TestScripts" CertificationCode="ECTS2PS001" ProviderIdentification="swedbankpay" SoftwareVersion="1.0"/>
                 <SaleTerminalData TerminalEnvironment="Attended">
-                    <SaleCapabilities>PrinterReceipt</SaleCapabilities>
+                    <SaleCapabilities>${if (enableSaleCapabilities) "PrinterReceipt CashierStatus CashierError CashierDisplay CashierInput" else "PrinterReceipt"}</SaleCapabilities>
                     <SaleProfile/>
                 </SaleTerminalData>
             </LoginRequest>

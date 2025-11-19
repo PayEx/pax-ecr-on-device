@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -34,7 +35,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
@@ -49,6 +49,8 @@ var lastResponseTransactionId by mutableStateOf("")
 var selectedMode by mutableStateOf<Mode?>(null)
 var receiptData by mutableStateOf("")
 var receiptElements = mutableStateMapOf<String, Int>()
+
+var nexoRequests = mutableStateListOf<String>()
 
 enum class Mode {
     PAYMENT_APPLICATION,
@@ -73,9 +75,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                     onClick = ::hideNavBar,
                 ) {
-                    if (config.responseScreenEnabled && responseText.isNotBlank()) {
-                        ResponseScreen(response = responseText) {
+                    if (config.responseScreenEnabled && (responseText.isNotBlank() || nexoRequests.isNotEmpty())) {
+                        val outcome = (nexoRequests + responseText).joinToString(separator = "\n\n")
+                        ResponseScreen(response = outcome) {
                             responseText = ""
+                            nexoRequests.clear()
                         }
                     } else if (receiptData.isNotBlank()) {
                         PrintReceiptScreen(
@@ -116,6 +120,9 @@ class MainActivity : ComponentActivity() {
                             null ->
                                 ModeSelectorScreen(modifier = Modifier.fillMaxHeight(.93f), modeSelector = ::handleModeSelected)
                         }
+                    }
+                    if (!config.enableSaleCapabilities) {
+                        nexoRequests.clear()
                     }
                 }
             }
@@ -211,7 +218,7 @@ class MainActivity : ComponentActivity() {
         hideNavBar()
         when (action) {
             Action.ADMIN -> sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
-            Action.LOGIN -> sendMessageIntent(loginRequest())
+            Action.LOGIN -> sendMessageIntent(loginRequest(config.enableSaleCapabilities))
             Action.LOGOUT -> sendMessageIntent(logout())
             Action.PRINT_RECEIPT -> sendMessageIntent(receipt(receiptData))
             Action.PURCHASE -> sendMessageIntent(payment(amount = BigDecimal.TEN))
