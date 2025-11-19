@@ -15,7 +15,7 @@ android {
         //noinspection ExpiredTargetSdkVersion App will not be published to Google Play
         targetSdk = 28
         versionCode = 1
-        versionName = "1.3"
+        versionName = "1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

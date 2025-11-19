@@ -15,6 +15,7 @@ import org.xml.sax.InputSource
 import org.xml.sax.SAXParseException
 import java.io.StringReader
 import java.nio.charset.Charset
+import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
@@ -28,13 +29,15 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
     ) {
-        val nexoMessage = intent.extras?.getByteArray(Intent.EXTRA_TEXT)?.toString(Charset.defaultCharset())
-        if (!nexoMessage.isConfigMessage()) {
+        val nexoMessage = intent.extras?.getByteArray(Intent.EXTRA_TEXT)?.toString(Charset.defaultCharset()) ?: ""
+        if (isResponse(nexoMessage)) {
             moveToForeground(context)
+        } else {
+            nexoRequests.add(nexoMessage)
         }
         lastResponseTransactionId = nexoMessage.extractPOITransactionID()
         lastTransactionDatetime = nexoMessage.extractPOITimeStamp()
-        responseText = nexoMessage.orEmpty()
+        responseText = nexoMessage
         receiptData = nexoMessage.extractCustomerReceipt()?.toReceiptData(receiptElements).orEmpty()
         if (nexoMessage.isLoginResponseFailure()) {
             Toast.makeText(
@@ -98,6 +101,22 @@ class NexoMessageIntentReceiver : BroadcastReceiver() {
                 ?.attributes?.getNamedItem("Result")
                 ?.nodeValue ?: ""
         }.let { it != "Success" && it.isNotBlank() }
+
+    private fun isResponse(message: String?): Boolean {
+        return try {
+            val documentBuilder: DocumentBuilder =
+                DocumentBuilderFactory
+                    .newInstance()
+                    .newDocumentBuilder()
+
+            documentBuilder
+                .parse(InputSource(StringReader(message)))
+                .firstChild
+                .nodeName == "SaleToPOIResponse"
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     private fun String?.extractCommon(extraction: (Document) -> String) =
         try {

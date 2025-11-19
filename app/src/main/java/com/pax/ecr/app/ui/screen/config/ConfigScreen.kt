@@ -1,9 +1,9 @@
 package com.pax.ecr.app.ui.screen.config
 
+import SettingsRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -68,17 +67,27 @@ fun ConfigScreen(
             }, label = {
                 Text(text = "Sale ID")
             })
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text(text = "Show responses explicit")
-                Switch(
+                SettingsRow(
+                    text = "Show responses explicit",
                     checked = config.responseScreenEnabled,
-                    onCheckedChange = { onConfigChange(config.copy(responseScreenEnabled = it)) },
+                    onCheckedChange = {
+                        onConfigChange(config.copy(responseScreenEnabled = it))
+                    },
+                )
+
+                SettingsRow(
+                    text = "Enable sale capability to handle requests",
+                    checked = config.enableSaleCapabilities,
+                    onCheckedChange = {
+                        onConfigChange(config.copy(enableSaleCapabilities = it))
+                    },
                 )
             }
         }
