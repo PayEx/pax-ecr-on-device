@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.edit
 import com.pax.ecr.app.NexoMessages.loginRequest
 import com.pax.ecr.app.NexoMessages.logout
 import com.pax.ecr.app.NexoMessages.payment
@@ -38,7 +39,6 @@ import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import androidx.core.content.edit
 
 var responseText by mutableStateOf("")
 var config by mutableStateOf(Config.DEFAULT)
