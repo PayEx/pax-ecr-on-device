@@ -53,6 +53,7 @@ fun AdminMenu(
             AdminMenuButton("Show payment app") { actionHandler(AdminAction.MOVE_TO_FRONT) }
             AdminMenuButton("Shutdown ECR on Device") { actionHandler(AdminAction.SHUTDOWN) }
             AdminMenuButton("Temporarily show payment app") { actionHandler(AdminAction.TEMPORARY_SHOW) }
+            AdminMenuButton("Request device information") { actionHandler(AdminAction.BROADCAST_DEVICE_INFO) }
         }
     }
 }

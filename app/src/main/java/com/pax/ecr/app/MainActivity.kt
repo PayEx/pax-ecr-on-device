@@ -1,6 +1,5 @@
 package com.pax.ecr.app
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -16,6 +15,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.edit
 import com.pax.ecr.app.NexoMessages.loginRequest
 import com.pax.ecr.app.NexoMessages.logout
 import com.pax.ecr.app.NexoMessages.payment
@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun restoreConfig() =
-        getSharedPreferences("config", Context.MODE_PRIVATE).let {
+        getSharedPreferences("config", MODE_PRIVATE).let {
             it.getString("config", null)?.let { configJson -> Json.decodeFromString<Config>(configJson) } ?: Config.DEFAULT
         }
 
@@ -155,10 +155,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun saveConfig(config: Config) {
-        val sharedPreferences = getSharedPreferences("config", Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
+        val sharedPreferences = getSharedPreferences("config", MODE_PRIVATE)
+        sharedPreferences.edit {
             putString("config", Json.encodeToString(config))
-            apply()
         }
     }
 
@@ -179,30 +178,27 @@ class MainActivity : ComponentActivity() {
             AdminAction.OPEN_ADMIN_MENU -> {
                 sendAdminIntent(AdminAction.OPEN_ADMIN_MENU)
             }
-
             AdminAction.MOVE_TO_FRONT -> {
                 sendAdminIntent(AdminAction.MOVE_TO_FRONT)
             }
-
             AdminAction.MOVE_TO_BACK -> {
                 sendAdminIntent(AdminAction.MOVE_TO_BACK)
             }
-
             AdminAction.TEMPORARY_SHOW -> {
                 showThenHide()
             }
-
             AdminAction.OPEN_CONFIG_MENU -> {
                 openConfigMenu()
             }
             AdminAction.BROADCAST_CONFIG -> {
                 throw UnsupportedOperationException()
             }
-
+            AdminAction.BROADCAST_DEVICE_INFO -> {
+                sendAdminIntent(AdminAction.BROADCAST_DEVICE_INFO)
+            }
             AdminAction.MODE_SELECTOR -> {
                 selectedMode = null
             }
-
             AdminAction.SHUTDOWN -> {
                 this.finishAndRemoveTask()
             }
