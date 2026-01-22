@@ -2,6 +2,7 @@ package com.pax.ecr.app
 
 enum class AdminAction {
     BROADCAST_CONFIG,
+    BROADCAST_DEVICE_INFO,
     MOVE_TO_BACK,
     MOVE_TO_FRONT,
     OPEN_ADMIN_MENU,
