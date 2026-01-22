@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.pax.ecr.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.pax.ecr.app"
