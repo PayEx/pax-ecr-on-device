@@ -2,8 +2,7 @@
 junit = "4.13.2"
 assertk = "0.28.1"
 activity_compose = "1.12.2"
-material3 = "latest.release"
-compose_bom = "2026.01.00"
+compose_bom = "2026.05.00"
 core_ktx = "1.17.0"
 lifecycle_ktx = "2.10.0"
 serialization_json = "1.10.0"
@@ -20,7 +19,7 @@ androidx_ui_tooling = { module = "androidx.compose.ui:ui-tooling" }
 
 # Main Implementation Dependencies
 androidx_activity_compose = { module = "androidx.activity:activity-compose", version.ref = "activity_compose" }
-androidx_material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx_material3 = { module = "androidx.compose.material3:material3" }
 androidx_ui = { module = "androidx.compose.ui:ui" }
 androidx_ui_graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx_ui_tooling_preview = { module = "androidx.compose.ui:ui-tooling-preview" }
